@@ -128,7 +128,7 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-           Gesstionar Usuarios
+            Gestionar Torres
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">

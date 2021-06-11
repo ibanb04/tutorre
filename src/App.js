@@ -1,9 +1,10 @@
 import Routes from "./application/routes";
-export default () => {
+
+    export default () => {
 
     return (
         <div>
-           <Routes/>
+            <Routes />
         </div>
     );
 };

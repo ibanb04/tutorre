@@ -12,7 +12,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from '../home/Title';
 import { Edit, Delete, Search } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
-import SetStatus from '../torres/setStatus'
+import SetStatus from '../apartamentos/setStatus';
+import SelectApartamentos from './selectApartamentos';
+import SelectInquilinos from './selectInquilinos';
+import SelectEstadoApartamento from './selectEstadoApartamento';
 function preventDefault(event) {
   event.preventDefault();
 }
@@ -40,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Torres() {
+export default function apartamentos() {
   const classes = useStyles();
   const baseUrl = 'https://jsonplaceholder.typicode.com/users'
   const styles = useStyles();
@@ -49,7 +52,7 @@ export default function Torres() {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
-  const [torreSeleccionada, setTorreSeleccionada] = useState({
+  const [apartamentoSeleccionado, setApartamentoSeleccionado] = useState({
     username: '',
     name: '',
     email: ''
@@ -57,11 +60,11 @@ export default function Torres() {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setTorreSeleccionada(prevState => ({
+    setApartamentoSeleccionado(prevState => ({
       ...prevState,
       [name]: value
     }))
-    console.log(torreSeleccionada);
+    console.log(apartamentoSeleccionado);
   }
 
   const peticionGet = async () => {
@@ -72,7 +75,7 @@ export default function Torres() {
   }
 
   const peticionPost = async () => {
-    await axios.post(baseUrl, torreSeleccionada)
+    await axios.post(baseUrl, apartamentoSeleccionado)
       .then(response => {
         setData(data.concat(response.data))
         abrirCerrarModalInsertar()
@@ -80,15 +83,15 @@ export default function Torres() {
   }
 
   const peticionPut = async () => {
-    await axios.put(baseUrl + torreSeleccionada.id, torreSeleccionada)
+    await axios.put(baseUrl + apartamentoSeleccionado.id, apartamentoSeleccionado)
       .then(response => {
         var dataNueva = data;
-        dataNueva.map(torre => {
-          if (torreSeleccionada.id === torre.id) {
-            torre.nombre = torreSeleccionada.nombre;
-            torre.lanzamiento = torreSeleccionada.lanzamiento;
-            torre.empresa = torreSeleccionada.empresa;
-            torre.unidades_vendidas = torreSeleccionada.unidades_vendidas;
+        dataNueva.map(apartamento => {
+          if (apartamentoSeleccionado.id === apartamento.id) {
+            apartamento.nombre = apartamentoSeleccionado.nombre;
+            apartamento.lanzamiento = apartamentoSeleccionado.lanzamiento;
+            apartamento.empresa = apartamentoSeleccionado.empresa;
+            apartamento.unidades_vendidas = apartamentoSeleccionado.unidades_vendidas;
           }
         })
         setData(dataNueva);
@@ -97,9 +100,9 @@ export default function Torres() {
   }
 
   const peticionDelete = async () => {
-    await axios.delete(baseUrl + torreSeleccionada.id)
+    await axios.delete(baseUrl + apartamentoSeleccionado.id)
       .then(response => {
-        setData(data.filter(torre => torre.id !== torreSeleccionada.id));
+        setData(data.filter(apartamento => apartamento.id !== apartamentoSeleccionado.id));
         abrirCerrarModalEliminar();
       })
   }
@@ -116,8 +119,8 @@ export default function Torres() {
     setModalEliminar(!modalEliminar);
   }
 
-  const seleccionarTorre = (torre, caso) => {
-    setTorreSeleccionada(torre);
+  const seleccionarApartamento = (apartamento, caso) => {
+    setApartamentoSeleccionado(apartamento);
     (caso === 'Editar') ? abrirCerrarModalEditar() : abrirCerrarModalEliminar()
   }
 
@@ -127,16 +130,16 @@ export default function Torres() {
 
   const bodyInsertar = (
     <div className={styles.modal}>
-      <h3>Agregar Nueva Torre </h3>
-      <TextField name="name" className={styles.inputMaterial} label="Nombre de la torre" onChange={handleChange} />
+      <h3>Agregar Nueva apartamento </h3>
+      <SelectApartamentos/>
+      <TextField name="n_apartamento" className={styles.inputMaterial} label="Número de Apartamento" onChange={handleChange} />
       <br />
-      <TextField name="n_pisos" className={styles.inputMaterial} label="Numero de pisos" onChange={handleChange} />
+      <TextField name="n_piso" className={styles.inputMaterial} type="number"  label="Número de piso" onChange={handleChange} />
       <br />
+      <TextField name="tamaño" className={styles.inputMaterial} label="Tamaño(m2)" onChange={handleChange} />
+      <SelectEstadoApartamento/>
+      <SelectInquilinos/>
       <br />
-      <div>
-        <SetStatus></SetStatus>
-      </div>
-      <br /><br />
       <div align="right">
         <Button color="primary" onClick={() => peticionPost()}>Insertar</Button>
         <Button onClick={() => abrirCerrarModalInsertar()}>Cancelar</Button>
@@ -146,10 +149,10 @@ export default function Torres() {
 
   const bodyEditar = (
     <div className={styles.modal}>
-      <h3>Editar torre</h3>
-      <TextField name="name" className={styles.inputMaterial} label="Nombre de la torre" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.nombre} />
+      <h3>Editar apartamento</h3>
+      <TextField name="name" className={styles.inputMaterial} label="Nombre de la apartamento" onChange={handleChange} value={apartamentoSeleccionado && apartamentoSeleccionado.nombre} />
       <br />
-      <TextField name="n:pisos" className={styles.inputMaterial} label="número de pisos" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.empresa} />
+      <TextField name="n_pisos" className={styles.inputMaterial} label="número de pisos" onChange={handleChange} value={apartamentoSeleccionado && apartamentoSeleccionado.empresa} />
       <br />
       <br />
       <div>
@@ -164,7 +167,7 @@ export default function Torres() {
 
   const bodyEliminar = (
     <div className={styles.modal}>
-      <p>Estás seguro que deseas eliminar esta torre <b>{torreSeleccionada && torreSeleccionada.nombre}</b> ? </p>
+      <p>Estás seguro que deseas eliminar esta apartamento <b>{apartamentoSeleccionado && apartamentoSeleccionado.nombre}</b> ? </p>
       <div align="right">
         <Button color="secondary" onClick={() => peticionDelete()} >Sí</Button>
         <Button onClick={() => abrirCerrarModalEliminar()}>No</Button>
@@ -184,29 +187,35 @@ export default function Torres() {
         <AddIcon />
       </Fab>
       <br />
-      <Title>Lista de torres  </Title>
+      <Title>Lista de apartamentos  </Title>
 
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Nombre de la torre</TableCell>
-            <TableCell>Número de pisos</TableCell>
-            <TableCell>Ascensor</TableCell>
+            <TableCell>Torre</TableCell>
+            <TableCell>Número de Apartamento</TableCell>
+            <TableCell>Número de Piso</TableCell>
+            <TableCell>Inquilino</TableCell>
+            <TableCell>Tamaño(m2)</TableCell>
+            <TableCell>Estado</TableCell>
             <TableCell  align="center">Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map(torre => (
+          {data.map(apartamento => (
             <TableRow>
-              <TableCell>{torre.username}</TableCell>
-              <TableCell>{torre.name}</TableCell>
-              <TableCell>{torre.email}</TableCell>
-              <TableCell align="center">
-                <Search></Search>
-                &nbsp;&nbsp;&nbsp;
-                <Edit className={styles.iconos} onClick={() => seleccionarTorre(torre, 'Editar')} />
-                &nbsp;&nbsp;&nbsp;
-                <Delete className={styles.iconos} onClick={() => seleccionarTorre(torre, 'Eliminar')} />
+              <TableCell>{apartamento.username}</TableCell>
+              <TableCell>{apartamento.name}</TableCell>
+              <TableCell>{apartamento.name}</TableCell>
+              <TableCell>{apartamento.name}</TableCell>
+              <TableCell>{apartamento.name}</TableCell>
+              <TableCell>{apartamento.email}</TableCell>
+              <TableCell >
+                
+                &nbsp;&nbsp;
+                <Edit className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Editar')} />
+                
+                <Delete className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Eliminar')} />
 
 
               </TableCell>

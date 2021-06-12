@@ -98,6 +98,7 @@ export default function SignInSide() {
               variant="contained"
               color="primary"
               className={classes.submit}
+              component="a" href="/users"
             >
               Entrar
             </Button>

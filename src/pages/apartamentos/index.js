@@ -117,7 +117,7 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBarra title = "Gestionar Torres" />
+      <AppBarra title="Gestionar apartamentos"/>
       <Drawer
         variant="permanent"
         classes={{

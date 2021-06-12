@@ -13,6 +13,8 @@ import Title from '../home/Title';
 import { Edit, Delete, Search } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
 import SetStatus from '../users/setStatus'
+import PeopleIcon from '@material-ui/icons/Person';
+
 function preventDefault(event) {
   event.preventDefault();
 }
@@ -195,6 +197,7 @@ export default function Users() {
         <AddIcon />
       </Fab>
       <br />
+     
       <Title>Lista de Usuarios  </Title>
 
       <Table size="small">

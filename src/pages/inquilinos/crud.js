@@ -15,6 +15,10 @@ import AddIcon from '@material-ui/icons/Add';
 import SetStatus from '../apartamentos/setStatus';
 import SelectApartamentos from './selectApartamentos';
 import SelectInquilinos from './selectInquilinos';
+import SelectTorre from './selectTorre';
+import SelectVehiculo from './selectVehiculo';
+import SelectPropietario from './selectPropietario';
+import Calendario from './calendario';
 import SelectEstadoApartamento from './selectEstadoApartamento';
 function preventDefault(event) {
   event.preventDefault();
@@ -43,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function apartamentos() {
+export default function inquilinos() {
   const classes = useStyles();
   const baseUrl = 'https://jsonplaceholder.typicode.com/users'
   const styles = useStyles();
@@ -52,7 +56,7 @@ export default function apartamentos() {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
-  const [apartamentoSeleccionado, setApartamentoSeleccionado] = useState({
+  const [inquilinoSeleccionado, setInquilinoSeleccionado] = useState({
     username: '',
     name: '',
     email: ''
@@ -60,11 +64,11 @@ export default function apartamentos() {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setApartamentoSeleccionado(prevState => ({
+    setInquilinoSeleccionado(prevState => ({
       ...prevState,
       [name]: value
     }))
-    console.log(apartamentoSeleccionado);
+    console.log(inquilinoSeleccionado);
   }
 
   const peticionGet = async () => {
@@ -75,7 +79,7 @@ export default function apartamentos() {
   }
 
   const peticionPost = async () => {
-    await axios.post(baseUrl, apartamentoSeleccionado)
+    await axios.post(baseUrl, inquilinoSeleccionado)
       .then(response => {
         setData(data.concat(response.data))
         abrirCerrarModalInsertar()
@@ -83,15 +87,15 @@ export default function apartamentos() {
   }
 
   const peticionPut = async () => {
-    await axios.put(baseUrl + apartamentoSeleccionado.id, apartamentoSeleccionado)
+    await axios.put(baseUrl + inquilinoSeleccionado.id, inquilinoSeleccionado)
       .then(response => {
         var dataNueva = data;
-        dataNueva.map(apartamento => {
-          if (apartamentoSeleccionado.id === apartamento.id) {
-            apartamento.nombre = apartamentoSeleccionado.nombre;
-            apartamento.lanzamiento = apartamentoSeleccionado.lanzamiento;
-            apartamento.empresa = apartamentoSeleccionado.empresa;
-            apartamento.unidades_vendidas = apartamentoSeleccionado.unidades_vendidas;
+        dataNueva.map(inquilino => {
+          if (inquilinoSeleccionado.id === inquilino.id) {
+            inquilino.nombre = inquilinoSeleccionado.nombre;
+            inquilino.lanzamiento = inquilinoSeleccionado.lanzamiento;
+            inquilino.empresa = inquilinoSeleccionado.empresa;
+            inquilino.unidades_vendidas = inquilinoSeleccionado.unidades_vendidas;
           }
         })
         setData(dataNueva);
@@ -100,9 +104,9 @@ export default function apartamentos() {
   }
 
   const peticionDelete = async () => {
-    await axios.delete(baseUrl + apartamentoSeleccionado.id)
+    await axios.delete(baseUrl + inquilinoSeleccionado.id)
       .then(response => {
-        setData(data.filter(apartamento => apartamento.id !== apartamentoSeleccionado.id));
+        setData(data.filter(inquilino => inquilino.id !== inquilinoSeleccionado.id));
         abrirCerrarModalEliminar();
       })
   }
@@ -119,8 +123,8 @@ export default function apartamentos() {
     setModalEliminar(!modalEliminar);
   }
 
-  const seleccionarApartamento = (apartamento, caso) => {
-    setApartamentoSeleccionado(apartamento);
+  const seleccionarInquilino = (inquilino, caso) => {
+    setInquilinoSeleccionado(inquilino);
     (caso === 'Editar') ? abrirCerrarModalEditar() : abrirCerrarModalEliminar()
   }
 
@@ -130,15 +134,16 @@ export default function apartamentos() {
 
   const bodyInsertar = (
     <div className={styles.modal}>
-      <h3>Agregar Nueva apartamento </h3>
+      <h3>Agregar Nuevo inquilino </h3>
+      <TextField name="name" className={styles.inputMaterial} label="Nombre" onChange={handleChange} />
+      <br />
+      <TextField name="Apellido" className={styles.inputMaterial}   label="Apellido" onChange={handleChange} />
+      <br />
       <SelectApartamentos/>
-      <TextField name="n_apartamento" className={styles.inputMaterial} label="Número de Apartamento" onChange={handleChange} />
-      <br />
-      <TextField name="n_piso" className={styles.inputMaterial} type="number"  label="Número de piso" onChange={handleChange} />
-      <br />
-      <TextField name="tamaño" className={styles.inputMaterial} label="Tamaño(m2)" onChange={handleChange} />
-      <SelectEstadoApartamento/>
-      <SelectInquilinos/>
+      <SelectTorre/>
+      <Calendario /> 
+      <SelectVehiculo/>
+      <SelectPropietario/>
       <br />
       <div align="right">
         <Button color="primary" onClick={() => peticionPost()}>Insertar</Button>
@@ -149,10 +154,10 @@ export default function apartamentos() {
 
   const bodyEditar = (
     <div className={styles.modal}>
-      <h3>Editar apartamento</h3>
-      <TextField name="name" className={styles.inputMaterial} label="Nombre de la apartamento" onChange={handleChange} value={apartamentoSeleccionado && apartamentoSeleccionado.nombre} />
+      <h3>Editar inquilino</h3>
+      <TextField name="name" className={styles.inputMaterial} label="Nombre de la inquilino" onChange={handleChange} value={inquilinoSeleccionado && inquilinoSeleccionado.nombre} />
       <br />
-      <TextField name="n_pisos" className={styles.inputMaterial} label="número de pisos" onChange={handleChange} value={apartamentoSeleccionado && apartamentoSeleccionado.empresa} />
+      <TextField name="n_pisos" className={styles.inputMaterial} label="número de pisos" onChange={handleChange} value={inquilinoSeleccionado && inquilinoSeleccionado.empresa} />
       <br />
       <br />
       <div>
@@ -167,7 +172,7 @@ export default function apartamentos() {
 
   const bodyEliminar = (
     <div className={styles.modal}>
-      <p>Estás seguro que deseas eliminar esta apartamento <b>{apartamentoSeleccionado && apartamentoSeleccionado.nombre}</b> ? </p>
+      <p>Estás seguro que deseas eliminar esta inquilino <b>{inquilinoSeleccionado && inquilinoSeleccionado.nombre}</b> ? </p>
       <div align="right">
         <Button color="secondary" onClick={() => peticionDelete()} >Sí</Button>
         <Button onClick={() => abrirCerrarModalEliminar()}>No</Button>
@@ -202,20 +207,20 @@ export default function apartamentos() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map(apartamento => (
+          {data.map(inquilino => (
             <TableRow>
-              <TableCell>{apartamento.username}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.email}</TableCell>
+              <TableCell>{inquilino.username}</TableCell>
+              <TableCell>{inquilino.name}</TableCell>
+              <TableCell>{inquilino.name}</TableCell>
+              <TableCell>{inquilino.name}</TableCell>
+              <TableCell>{inquilino.name}</TableCell>
+              <TableCell>{inquilino.email}</TableCell>
               <TableCell >
                 
                 &nbsp;&nbsp;
-                <Edit className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Editar')} />
+                <Edit className={styles.iconos} onClick={() => seleccionarInquilino(inquilino, 'Editar')} />
                 
-                <Delete className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Eliminar')} />
+                <Delete className={styles.iconos} onClick={() => seleccionarInquilino(inquilino, 'Eliminar')} />
 
 
               </TableCell>

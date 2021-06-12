@@ -26,16 +26,15 @@ export default function SimpleSelect() {
   return (
     <div>
       <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Apartamento</InputLabel>
+        <InputLabel id="demo-simple-select-label">Propietario?</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={age}
           onChange={handleChange}
         >
-          <MenuItem value={10}>Apartamento 1</MenuItem>
-          <MenuItem value={20}>Apartamento 2</MenuItem>
-          <MenuItem value={30}>Apartamento 3</MenuItem>
+          <MenuItem value={1}>Si</MenuItem>
+          <MenuItem value={0}>No</MenuItem>
         </Select>
       </FormControl>
     </div>

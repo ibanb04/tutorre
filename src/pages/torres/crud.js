@@ -42,7 +42,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Torres() {
   const classes = useStyles();
-  const baseUrl = 'https://jsonplaceholder.typicode.com/users'
+  const baseUrl = 'http://25.84.83.43:8093/tower/getTowers'
+  const createTowerUrl = 'http://25.84.83.43:8093/tower/create'
+  const updateTowerUrl = 'http://25.84.83.43:8093/tower/updateTower'
+  const deleteTowerUrl = 'http://25.84.83.43:8093/tower/deleteTower'
   const styles = useStyles();
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
@@ -50,9 +53,9 @@ export default function Torres() {
   const [modalEliminar, setModalEliminar] = useState(false);
 
   const [torreSeleccionada, setTorreSeleccionada] = useState({
-    username: '',
     name: '',
-    email: ''
+    floorNumber: '',
+    elevator: ''
   })
 
   const handleChange = e => {
@@ -67,41 +70,36 @@ export default function Torres() {
   const peticionGet = async () => {
     await axios.get(baseUrl)
       .then(response => {
-        setData(response.data);
+        setData(response.data.response);
       })
   }
 
   const peticionPost = async () => {
-    await axios.post(baseUrl, torreSeleccionada)
+    await axios.post(createTowerUrl, torreSeleccionada)
       .then(response => {
         setData(data.concat(response.data))
         abrirCerrarModalInsertar()
+        window.location.reload();
       })
   }
 
-  const peticionPut = async () => {
-    await axios.put(baseUrl + torreSeleccionada.id, torreSeleccionada)
-      .then(response => {
-        var dataNueva = data;
-        dataNueva.map(torre => {
-          if (torreSeleccionada.id === torre.id) {
-            torre.nombre = torreSeleccionada.nombre;
-            torre.lanzamiento = torreSeleccionada.lanzamiento;
-            torre.empresa = torreSeleccionada.empresa;
-            torre.unidades_vendidas = torreSeleccionada.unidades_vendidas;
-          }
-        })
-        setData(dataNueva);
-        abrirCerrarModalEditar();
-      })
+  const peticionUpdate = async () => {
+    await axios.post(updateTowerUrl, torreSeleccionada)
+    .then(response => {
+      setData(data.concat(response.data))
+      abrirCerrarModalEditar()
+      window.location.reload();
+    })
   }
 
+
+ 
   const peticionDelete = async () => {
-    await axios.delete(baseUrl + torreSeleccionada.id)
-      .then(response => {
-        setData(data.filter(torre => torre.id !== torreSeleccionada.id));
-        abrirCerrarModalEliminar();
-      })
+    await axios.post(deleteTowerUrl, torreSeleccionada)
+    .then(response=>{
+      setData(data.filter(torre=>torre.id!==torreSeleccionada.id));
+      abrirCerrarModalEliminar();
+    })
   }
 
   const abrirCerrarModalInsertar = () => {
@@ -130,7 +128,7 @@ export default function Torres() {
       <h3>Agregar Nueva Torre </h3>
       <TextField name="name" className={styles.inputMaterial} label="Nombre de la torre" onChange={handleChange} />
       <br />
-      <TextField name="n_pisos" className={styles.inputMaterial} label="Numero de pisos" onChange={handleChange} />
+      <TextField name="floorNumber" type="number" className={styles.inputMaterial} label="Numero de pisos" onChange={handleChange} />
       <br />
       <br />
       <div>
@@ -147,16 +145,16 @@ export default function Torres() {
   const bodyEditar = (
     <div className={styles.modal}>
       <h3>Editar torre</h3>
-      <TextField name="name" className={styles.inputMaterial} label="Nombre de la torre" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.nombre} />
+      <TextField name="name" className={styles.inputMaterial} label="Nombre de la torre" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.name} />
       <br />
-      <TextField name="n:pisos" className={styles.inputMaterial} label="número de pisos" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.empresa} />
+      <TextField name="floorNumber"  className={styles.inputMaterial} type= "number" label="número de pisos" onChange={handleChange} value={torreSeleccionada && torreSeleccionada.floorNumber} />
       <br />
       <br />
       <div>
         <SetStatus></SetStatus>
       </div>
       <div align="right">
-        <Button color="primary" onClick={() => peticionPut()}>Editar</Button>
+        <Button color="primary" onClick={() => peticionUpdate()}>Editar</Button>
         <Button onClick={() => abrirCerrarModalEditar()}>Cancelar</Button>
       </div>
     </div>
@@ -164,7 +162,7 @@ export default function Torres() {
 
   const bodyEliminar = (
     <div className={styles.modal}>
-      <p>Estás seguro que deseas eliminar esta torre <b>{torreSeleccionada && torreSeleccionada.nombre}</b> ? </p>
+      <p>Estás seguro que deseas eliminar esta torre <b>{torreSeleccionada && torreSeleccionada.name}</b> ? </p>
       <div align="right">
         <Button color="secondary" onClick={() => peticionDelete()} >Sí</Button>
         <Button onClick={() => abrirCerrarModalEliminar()}>No</Button>
@@ -198,9 +196,9 @@ export default function Torres() {
         <TableBody>
           {data.map(torre => (
             <TableRow>
-              <TableCell>{torre.username}</TableCell>
               <TableCell>{torre.name}</TableCell>
-              <TableCell>{torre.email}</TableCell>
+              <TableCell>{torre.floorNumber}</TableCell>
+              <TableCell>{torre.elevator}</TableCell>
               <TableCell align="center">
                 <Search></Search>
                 &nbsp;&nbsp;&nbsp;

@@ -45,17 +45,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function apartamentos() {
   const classes = useStyles();
-  const baseUrl = 'https://jsonplaceholder.typicode.com/users'
+  const baseUrl = 'http://25.84.83.43:8093/apartment/getApartments'
+  const createApartmentUrl = 'http://25.84.83.43:8093/apartment/create'
+  const updateApartmentUrl = 'http://25.84.83.43:8093/apartment/updateApartment'
+  const deleteApartmentUrl = 'http://25.84.83.43:8093/apartment/deleteApartments'
   const styles = useStyles();
   const [data, setData] = useState([]);
+  const [inquilino, setInquilino] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEliminar, setModalEliminar] = useState(false);
 
   const [apartamentoSeleccionado, setApartamentoSeleccionado] = useState({
-    username: '',
-    name: '',
-    email: ''
+    apartmentSize: '',
+    busy: '',
+    number: '',
+    tenant: '',
+    tower: '',
+    floorNumber: ''
   })
 
   const handleChange = e => {
@@ -67,10 +74,12 @@ export default function apartamentos() {
     console.log(apartamentoSeleccionado);
   }
 
+
+ 
   const peticionGet = async () => {
     await axios.get(baseUrl)
-      .then(response => {
-        setData(response.data);
+      .then(res => {
+       setData(res.data.response)        
       })
   }
 
@@ -131,14 +140,14 @@ export default function apartamentos() {
   const bodyInsertar = (
     <div className={styles.modal}>
       <h3>Agregar Nueva apartamento </h3>
-      <SelectApartamentos/>
-      <TextField name="n_apartamento" className={styles.inputMaterial} label="Número de Apartamento" onChange={handleChange} />
+      <SelectApartamentos />
+      <TextField name="floorNumber" className={styles.inputMaterial} label="Número de Apartamento" onChange={handleChange} />
       <br />
-      <TextField name="n_piso" className={styles.inputMaterial} type="number"  label="Número de piso" onChange={handleChange} />
+      <TextField name="" className={styles.inputMaterial} type="number" label="Número de piso" onChange={handleChange} />
       <br />
-      <TextField name="tamaño" className={styles.inputMaterial} label="Tamaño(m2)" onChange={handleChange} />
-      <SelectEstadoApartamento/>
-      <SelectInquilinos/>
+      <TextField name="apartmentSize" className={styles.inputMaterial} label="Tamaño(m2)" onChange={handleChange} />
+      <SelectEstadoApartamento />
+      <SelectInquilinos />
       <br />
       <div align="right">
         <Button color="primary" onClick={() => peticionPost()}>Insertar</Button>
@@ -198,23 +207,25 @@ export default function apartamentos() {
             <TableCell>Inquilino</TableCell>
             <TableCell>Tamaño(m2)</TableCell>
             <TableCell>Estado</TableCell>
-            <TableCell  align="center">Acciones</TableCell>
+            <TableCell align="center">Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map(apartamento => (
+          {console.log(data)}
+          {data.map(apartamentos => (
             <TableRow>
-              <TableCell>{apartamento.username}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.name}</TableCell>
-              <TableCell>{apartamento.email}</TableCell>
+              <TableCell>{apartamentos.tower}</TableCell>
+              <TableCell>{apartamentos.number}</TableCell>
+              <TableCell>{apartamentos.floorNumber}</TableCell>
+              <TableCell>{apartamentos.tenant}</TableCell>
+              <TableCell>{apartamentos.apartmentSize}</TableCell>
+              <TableCell>{apartamentos.busy}</TableCell>
+
               <TableCell >
-                
+
                 &nbsp;&nbsp;
                 <Edit className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Editar')} />
-                
+
                 <Delete className={styles.iconos} onClick={() => seleccionarApartamento(apartamento, 'Eliminar')} />
 
 

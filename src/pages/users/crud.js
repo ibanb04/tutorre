@@ -44,7 +44,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Users() {
   const classes = useStyles();
-  const baseUrl = 'https://jsonplaceholder.typicode.com/users'
+
+  const baseUrl = 'http://25.84.83.43:8093/user/getUsers'
+
   const styles = useStyles();
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
@@ -53,9 +55,9 @@ export default function Users() {
 
   const [userSeleccionada, setUserSeleccionada] = useState({
     name: '',
-    empresa: '',
-    lanzamiento: '',
-    unidades_vendidas: ''
+    last_name: '',
+    email: '',
+    state: ''
   })
 
   const handleChange = e => {
@@ -70,7 +72,8 @@ export default function Users() {
   const peticionGet = async () => {
     await axios.get(baseUrl)
       .then(response => {
-        setData(response.data);
+        console.log(response.data.response),
+          setData(response.data.response);
       })
   }
 
@@ -197,7 +200,7 @@ export default function Users() {
         <AddIcon />
       </Fab>
       <br />
-     
+
       <Title>Lista de Usuarios  </Title>
 
       <Table size="small">
@@ -212,13 +215,14 @@ export default function Users() {
           </TableRow>
         </TableHead>
         <TableBody>
+
           {data.map(user => (
             <TableRow>
               <TableCell>{user.username}</TableCell>
               <TableCell>{user.name}</TableCell>
+              <TableCell>{user.lastname}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phone}</TableCell>
-              <TableCell>{user.website}</TableCell>
+              <TableCell>{user.state}</TableCell>
               <TableCell align="right">
                 <Search></Search>
                 &nbsp;&nbsp;&nbsp;

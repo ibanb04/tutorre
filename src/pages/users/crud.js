@@ -46,7 +46,9 @@ export default function Users() {
   const classes = useStyles();
 
   const baseUrl = 'http://25.84.83.43:8093/user/getUsers'
-
+  const createUserUrl = 'http://25.84.83.43:8093/user/create'
+  const updateUserUrl = 'http://25.84.83.43:8093/user/updateUser'
+  const deleteUserUrl = 'http://25.84.83.43:8093/user/deleteUser'
   const styles = useStyles();
   const [data, setData] = useState([]);
   const [modalInsertar, setModalInsertar] = useState(false);
@@ -54,10 +56,12 @@ export default function Users() {
   const [modalEliminar, setModalEliminar] = useState(false);
 
   const [userSeleccionada, setUserSeleccionada] = useState({
+    username: '',
     name: '',
-    last_name: '',
+    lastname: '',
     email: '',
-    state: ''
+    state: '',
+    pass: ''
   })
 
   const handleChange = e => {
@@ -78,36 +82,29 @@ export default function Users() {
   }
 
   const peticionPost = async () => {
-    await axios.post(baseUrl, userSeleccionada)
+    await axios.post(createUserUrl, userSeleccionada)
       .then(response => {
         setData(data.concat(response.data))
         abrirCerrarModalInsertar()
+        window.location.reload();
       })
   }
 
-  const peticionPut = async () => {
-    await axios.put(baseUrl + userSeleccionada.id, userSeleccionada)
-      .then(response => {
-        var dataNueva = data;
-        dataNueva.map(user => {
-          if (userSeleccionada.id === user.id) {
-            user.name = userSeleccionada.name;
-            user.lanzamiento = userSeleccionada.lanzamiento;
-            user.empresa = userSeleccionada.empresa;
-            user.unidades_vendidas = userSeleccionada.unidades_vendidas;
-          }
-        })
-        setData(dataNueva);
-        abrirCerrarModalEditar();
-      })
+  const peticionUpdate = async () => {
+    await axios.post(updateUserUrl, userSeleccionada)
+    .then(response => {
+      setData(data.concat(response.data))
+      abrirCerrarModalEditar()
+      window.location.reload();
+    })
   }
 
   const peticionDelete = async () => {
-    await axios.delete(baseUrl + userSeleccionada.id)
-      .then(response => {
-        setData(data.filter(user => user.id !== userSeleccionada.id));
-        abrirCerrarModalEliminar();
-      })
+    await axios.post(deleteUserUrl, userSeleccionada)
+    .then(response=>{
+      setData(data.filter(user=>user.id!==userSeleccionada.id));
+      abrirCerrarModalEliminar();
+    })
   }
 
   const abrirCerrarModalInsertar = () => {
@@ -128,7 +125,8 @@ export default function Users() {
   }
 
   useEffect(async () => {
-    await peticionGet();
+    await peticionGet()
+
   }, [])
 
   const bodyInsertar = (
@@ -138,9 +136,11 @@ export default function Users() {
       <br />
       <TextField name="name" className={styles.inputMaterial} label="Nombre" onChange={handleChange} />
       <br />
-      <TextField name="last_name" className={styles.inputMaterial} label="Apellido" onChange={handleChange} />
+      <TextField name="lastname" className={styles.inputMaterial} label="Apellido" onChange={handleChange} />
       <br />
       <TextField name="email" className={styles.inputMaterial} label="Email" onChange={handleChange} />
+      <br />
+      <TextField name="pass" type="password" className={styles.inputMaterial} label="Contraseña" onChange={handleChange} />
       <br />
 
       <br />
@@ -158,21 +158,23 @@ export default function Users() {
   const bodyEditar = (
     <div className={styles.modal}>
       <h3>Editar user</h3>
-      <TextField name="username" className={styles.inputMaterial} label="Nombre de usuario" onChange={handleChange} value={userSeleccionada && userSeleccionada.nombre} />
+      <TextField name="username" className={styles.inputMaterial} label="Nombre de usuario" onChange={handleChange} value={userSeleccionada && userSeleccionada.username} />
       <br />
-      <TextField name="name" className={styles.inputMaterial} label="Nombre" onChange={handleChange} value={userSeleccionada && userSeleccionada.empresa} />
+      <TextField name="name" className={styles.inputMaterial} label="Nombre" onChange={handleChange} value={userSeleccionada && userSeleccionada.name} />
       <br />
-      <TextField name="last_name" className={styles.inputMaterial} label="Apellido" onChange={handleChange} value={userSeleccionada && userSeleccionada.lanzamiento} />
+      <TextField name="lastname" className={styles.inputMaterial} label="Apellido" onChange={handleChange} value={userSeleccionada && userSeleccionada.lastname} />
       <br />
-      <TextField name="email" className={styles.inputMaterial} label="Email" onChange={handleChange} value={userSeleccionada && userSeleccionada.unidades_vendidas} />
+      <TextField name="email" className={styles.inputMaterial} label="Email" onChange={handleChange} value={userSeleccionada && userSeleccionada.email} />
       <br />
-      <TextField name="status" className={styles.inputMaterial} label="Estado" onChange={handleChange} value={userSeleccionada && userSeleccionada.unidades_vendidas} />
+      <TextField name="pass" className={styles.inputMaterial} label="Contraseña" onChange={handleChange} value={userSeleccionada && userSeleccionada.pass} />
+      <br />
+      <TextField name="state" className={styles.inputMaterial} label="Estado" onChange={handleChange} value={userSeleccionada && userSeleccionada.state} />
       <br /><br />
       <div>
         <SetStatus></SetStatus>
       </div>
       <div align="right">
-        <Button color="primary" onClick={() => peticionPut()}>Editar</Button>
+        <Button color="primary" onClick={() => peticionUpdate()}>Editar</Button>
         <Button onClick={() => abrirCerrarModalEditar()}>Cancelar</Button>
       </div>
     </div>
@@ -180,7 +182,7 @@ export default function Users() {
 
   const bodyEliminar = (
     <div className={styles.modal}>
-      <p>Estás seguro que deseas eliminar el Usuario <b>{userSeleccionada && userSeleccionada.nombre}</b> ? </p>
+      <p>Estás seguro que deseas eliminar el Usuario <b>{userSeleccionada && userSeleccionada.name}</b> ? </p>
       <div align="right">
         <Button color="secondary" onClick={() => peticionDelete()} >Sí</Button>
         <Button onClick={() => abrirCerrarModalEliminar()}>No</Button>
